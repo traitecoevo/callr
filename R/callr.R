@@ -34,7 +34,7 @@ callr <- function(filename_in, filename_out=NULL,
 ##' @param path Directory to install the script
 ##' @export
 install <- function(path) {
-  code <- c("#!/usr/bin/env Rscript", "library(methods)", "callr::main()")
+  code <- c("#!/usr/bin/env Rscript", "library(methods)", "callr:::main()")
   dest <- file.path(path, "callr")
   writeLines(code, dest)
   Sys.chmod(dest, "0755")
