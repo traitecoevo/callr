@@ -1,0 +1,53 @@
+# callr
+
+[![Build Status](https://travis-ci.org/traitecoevo/callr.png?branch=master)](https://travis-ci.org/traitecoevo/callr)
+
+Simple package for calling R from elsewhere via json
+
+```{r, echo=FALSE, results="asis"}
+dat <- list("function"="myfunction",
+            args=list(list(name="foo", value="bar")))
+json <- jsonlite::prettify(jsonlite::toJSON(dat, auto_unbox=TRUE))
+writeLines(json, "myfile.json")
+json
+```
+
+Then:
+
+```{r, echo=FALSE, results=FALSE}
+myfunction <- function(foo) {
+  rep(foo, 3)
+}
+callr("myfile.json")
+```
+
+```
+callr myfile.json
+```
+
+runs
+
+```r
+myfunction(foo="bar")
+```
+
+and saves the result in the element `value` in the original json.
+
+```{r}
+writeLines(readLines("myfile.json"))
+```
+
+Further options:
+
+```{r, echo=FALSE}
+try(parse_opts("--help"), silent=TRUE)
+```
+
+# Installation
+
+```r
+devtools::install_github("traitecoevo/callr")
+callr::install("~/bin")
+```
+
+The second line copies the `callr` script somewhere -- preferably in your `$PATH`.
