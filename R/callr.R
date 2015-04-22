@@ -76,6 +76,14 @@ read_callr_json <- function(filename) {
                             simplifyVector=TRUE,
                             simplifyMatrix=FALSE,
                             simplifyDataFrame=FALSE)
+
+  valid <- c("function", "args", "packages", "sources", "value")
+  extra <- setdiff(names(dat), valid)
+  if (length(extra) > 0L) {
+    warning(sprintf("Unknown fields in %s: %s",
+                    filename, paste(extra, collapse=", ")))
+  }
+
   list("function"=read_callr_function(dat[["function"]]),
        args=read_callr_args(dat[["args"]]),
        packages=read_callr_packages(dat[["packages"]]),
