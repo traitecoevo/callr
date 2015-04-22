@@ -72,7 +72,8 @@ Options:
 
 ##' @importFrom jsonlite fromJSON
 read_callr_json <- function(filename) {
-  dat <- jsonlite::fromJSON(readLines(filename),
+  ## This disables warning about the last line:
+  dat <- jsonlite::fromJSON(readLines(filename, warn=FALSE),
                             simplifyVector=TRUE,
                             simplifyMatrix=FALSE,
                             simplifyDataFrame=FALSE)
