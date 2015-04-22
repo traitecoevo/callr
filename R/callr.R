@@ -15,6 +15,9 @@ callr <- function(filename_in, filename_out=NULL,
   for (p in dat$packages) {
     library(p, character.only=TRUE)
   }
+  for (s in dat$sources) {
+    source(s, chdir=TRUE)
+  }
   call <- as.call(c(dat[["function"]], dat[["args"]]))
   value <- eval(call, .GlobalEnv)
   dat$dat$value <- value
@@ -76,6 +79,7 @@ read_callr_json <- function(filename) {
   list("function"=read_callr_function(dat[["function"]]),
        args=read_callr_args(dat[["args"]]),
        packages=read_callr_packages(dat[["packages"]]),
+       sources=read_callr_sources(dat[["sources"]]),
        dat=dat)
 }
 
@@ -119,6 +123,20 @@ read_callr_packages <- function(packages) {
     }
   }
   packages
+}
+
+read_callr_sources <- function(sources) {
+  if (!is.null(sources)) {
+    if (!is.character(sources)) {
+      stop("sources must be a character vector")
+    }
+    ok <- file.exists(sources)
+    if (!all(ok)) {
+      stop("Source files do not exist: ",
+           paste(sources[!ok], collapse=", "))
+    }
+  }
+  sources
 }
 
 ## From experimentr:

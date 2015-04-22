@@ -52,6 +52,18 @@ test_that("Unnamed args", {
   expect_that(res, equals(list(1:10, baz="another")))
 })
 
+test_that("sources", {
+  dat <- list("function"="myfun",
+              sources="functions.R",
+              args=list(
+                list(value=1:10)))
+  json <- jsonlite::toJSON(dat, auto_unbox=TRUE)
+  writeLines(json, "test.json")
+
+  res <- callr("test.json")
+  expect_that(res, equals(1:10))
+})
+
 test_that("options", {
   opts <- parse_opts(c("myfile"))
   expect_that(opts$filename, equals("myfile"))
