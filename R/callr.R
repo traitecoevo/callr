@@ -5,13 +5,15 @@
 ##' @param backup Backup existing file when
 ##' @param prettify Produce pretty json output?
 ##' @param auto_unbox Turn length-1 vectors into scalars in json output?
+##' @param strict Warn about additional fields in the json?
 ##' @export
 callr <- function(filename_in, filename_out=NULL,
-                  backup=FALSE, prettify=TRUE, auto_unbox=TRUE) {
+                  backup=FALSE, prettify=TRUE, auto_unbox=TRUE,
+                  strict=FALSE) {
   if (is.null(filename_out)) {
     filename_out <- filename_in
   }
-  dat <- read_callr_json(filename_in)
+  dat <- read_callr_json(filename_in, strict)
   for (p in dat$packages) {
     library(p, character.only=TRUE)
   }
@@ -65,24 +67,27 @@ Options:
   -h --help      Show this screen.
   -b --backup    Make a backup of filename if outfile is same as filename?
   -u --ugly      Don't prettify json output
+  -s --strict    Warn about extra fields
   -v --vectors   Don't auto unbox vectors to scalars" -> doc
 
   docopt::docopt(doc, args)
 }
 
 ##' @importFrom jsonlite fromJSON
-read_callr_json <- function(filename) {
+read_callr_json <- function(filename, strict) {
   ## This disables warning about the last line:
   dat <- jsonlite::fromJSON(readLines(filename, warn=FALSE),
                             simplifyVector=TRUE,
                             simplifyMatrix=FALSE,
                             simplifyDataFrame=FALSE)
 
-  valid <- c("function", "args", "packages", "sources", "value")
-  extra <- setdiff(names(dat), valid)
-  if (length(extra) > 0L) {
-    warning(sprintf("Unknown fields in %s: %s",
-                    filename, paste(extra, collapse=", ")))
+  if (strict) {
+    valid <- c("function", "args", "packages", "sources", "value")
+    extra <- setdiff(names(dat), valid)
+    if (length(extra) > 0L) {
+      warning(sprintf("Unknown fields in %s: %s",
+                      filename, paste(extra, collapse=", ")))
+    }
   }
 
   list("function"=read_callr_function(dat[["function"]]),

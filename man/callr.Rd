@@ -5,7 +5,7 @@
 \title{Call an R function via JSON}
 \usage{
 callr(filename_in, filename_out = NULL, backup = FALSE, prettify = TRUE,
-  auto_unbox = TRUE)
+  auto_unbox = TRUE, strict = FALSE)
 }
 \arguments{
 \item{filename_in}{Filename for JSON with function to run}
@@ -17,6 +17,8 @@ callr(filename_in, filename_out = NULL, backup = FALSE, prettify = TRUE,
 \item{prettify}{Produce pretty json output?}
 
 \item{auto_unbox}{Turn length-1 vectors into scalars in json output?}
+
+\item{strict}{Warn about additional fields in the json?}
 }
 \description{
 Call an R function via JSON
