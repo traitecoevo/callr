@@ -1,5 +1,9 @@
 # callr
 
+```{r, echo=FALSE, results=FALSE}
+devtools::load_all()
+```
+
 [![Build Status](https://travis-ci.org/traitecoevo/callr.png?branch=master)](https://travis-ci.org/traitecoevo/callr)
 
 Simple package for calling R from elsewhere via json

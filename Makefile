@@ -28,7 +28,7 @@ check_all:
 	REMAKE_TEST_INSTALL_PACKAGES=true make check
 
 README.md: README.Rmd
-	Rscript -e 'library(methods); devtools::load_all(); knitr::knit("README.Rmd")'
+	Rscript -e "knitr::knit('$<')"
 	sed -i.bak 's/[[:space:]]*$$//' README.md
 	rm -f $@.bak myfile.json
 
