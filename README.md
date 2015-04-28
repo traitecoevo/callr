@@ -1,9 +1,6 @@
 # callr
 
 
-```
-## Loading callr
-```
 
 [![Build Status](https://travis-ci.org/traitecoevo/callr.png?branch=master)](https://travis-ci.org/traitecoevo/callr)
 
