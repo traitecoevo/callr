@@ -8,7 +8,7 @@ devtools::load_all()
 
 Simple package for calling R from elsewhere via json
 
-```{r, echo=FALSE, results="asis"}
+```{r, echo=FALSE, comment=NA}
 dat <- list("function"="myfunction",
             args=list(list(name="foo", value="bar")))
 json <- jsonlite::prettify(jsonlite::toJSON(dat, auto_unbox=TRUE))
@@ -37,14 +37,14 @@ myfunction(foo="bar")
 
 and saves the result in the element `value` in the original json.
 
-```{r}
+```{r, echo=FALSE, comment=NA}
 writeLines(readLines("myfile.json"))
 ```
 
 Further options:
 
-```{r, echo=FALSE}
-try(parse_opts("--help"), silent=TRUE)
+```{r, echo=FALSE, comment=NA}
+writeLines(system2("callr", "--help", stdout=TRUE))
 ```
 
 # Installation

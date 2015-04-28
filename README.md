@@ -1,9 +1,16 @@
 # callr
 
+
+```
+## Loading callr
+```
+
 [![Build Status](https://travis-ci.org/traitecoevo/callr.png?branch=master)](https://travis-ci.org/traitecoevo/callr)
 
 Simple package for calling R from elsewhere via json
 
+
+```
 {
     "function": "myfunction",
     "args": [
@@ -14,6 +21,7 @@ Simple package for calling R from elsewhere via json
     ]
 }
 
+```
 
 Then:
 
@@ -32,39 +40,35 @@ myfunction(foo="bar")
 and saves the result in the element `value` in the original json.
 
 
-```r
-writeLines(readLines("myfile.json"))
 ```
-
-```
-## {
-##     "function": "myfunction",
-##     "args": [
-##         {
-##             "name": "foo",
-##             "value": "bar"
-##         }
-##     ],
-##     "value": [
-##         "bar",
-##         "bar",
-##         "bar"
-##     ]
-## }
+{
+    "function": "myfunction",
+    "args": [
+        {
+            "name": "foo",
+            "value": "bar"
+        }
+    ],
+    "value": [
+        "bar",
+        "bar",
+        "bar"
+    ]
+}
 ```
 
 Further options:
 
 
 ```
-## Usage:
-##   callr [options] <filename> [<outfile>]
-##
-## Options:
-##   -h --help      Show this screen.
-##   -b --backup    Make a backup of filename if outfile is same as filename?
-##   -u --ugly      Don't prettify json output
-##   -v --vectors   Don't auto unbox vectors to scalars
+Usage:
+  callr [options] <filename> [<outfile>]
+
+Options:
+  -h --help      Show this screen.
+  -b --backup    Make a backup of filename if outfile is same as filename?
+  -u --ugly      Don't prettify json output
+  -v --vectors   Don't auto unbox vectors to scalars
 ```
 
 # Installation
