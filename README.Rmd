@@ -2,6 +2,8 @@
 
 ```{r, echo=FALSE, results=FALSE}
 suppressMessages(devtools::load_all())
+knitr::knit_hooks$set(output = function(x, options)
+  paste0("```json\n", x, "```\n"))
 ```
 
 [![Build Status](https://travis-ci.org/traitecoevo/callr.png?branch=master)](https://travis-ci.org/traitecoevo/callr)
@@ -44,6 +46,8 @@ writeLines(readLines("myfile.json"))
 Further options:
 
 ```{r, echo=FALSE, comment=NA}
+knitr::knit_hooks$set(output = function(x, options)
+  paste0("```\n", x, "```\n"))
 writeLines(system2("callr", "--help", stdout=TRUE))
 ```
 

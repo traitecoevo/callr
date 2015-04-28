@@ -6,8 +6,7 @@
 
 Simple package for calling R from elsewhere via json
 
-
-```
+```json
 {
     "function": "myfunction",
     "args": [
@@ -36,8 +35,7 @@ myfunction(foo="bar")
 
 and saves the result in the element `value` in the original json.
 
-
-```
+```json
 {
     "function": "myfunction",
     "args": [
@@ -55,7 +53,6 @@ and saves the result in the element `value` in the original json.
 ```
 
 Further options:
-
 
 ```
 Usage:
