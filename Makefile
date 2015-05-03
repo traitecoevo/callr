@@ -25,7 +25,7 @@ check: build
 	@rm -rf ${PACKAGE}.Rcheck
 
 check_all:
-	REMAKE_TEST_INSTALL_PACKAGES=true make check
+	TEST_INSTALL_PACKAGES=true make check
 
 README.md: README.Rmd
 	Rscript -e "options(warnPartialMatchArgs=FALSE); knitr::knit('$<')"
