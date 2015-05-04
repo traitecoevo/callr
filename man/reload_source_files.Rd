@@ -2,9 +2,12 @@
 % Please edit documentation in R/environment.R
 \name{reload_source_files}
 \alias{reload_source_files}
+\alias{reload_source_files_inplace}
 \title{Test if source files are current}
 \usage{
 reload_source_files(envir, source_files = attr(envir, "source_files"), ...)
+
+reload_source_files_inplace(envir, ...)
 }
 \arguments{
 \item{envir}{Environment to load}
@@ -22,10 +25,12 @@ Test if environments are current and reload out-of-date
 environments.
 }
 \details{
-If source_files are reloaded, a \emph{new} environment is created; this
-environment will have the same parent as \code{envir}.  It would
-be straightforward, but not implemented, to delete all the objects
-from \code{envir} and re-source into that environment though.
+If source_files are reloaded, a \emph{new} environment is created;
+this environment will have the same parent as \code{envir}.
+Alternatively, use \code{reload_source_files_inplace} to delete
+all the objects from \code{envir} and re-source into that
+environment though.  Beware that that will affect anything else
+that uses this environment.
 
 Test if source_files are current, based on their md5 signature.
 Nothing clever is done here; missing files, changed files, etc all

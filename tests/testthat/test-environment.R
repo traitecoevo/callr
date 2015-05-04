@@ -46,7 +46,7 @@ test_that("magrittr", {
   }
 })
 
-test_that("current", {
+test_that("current / reload", {
   str <- 'f <- function(x) x'
   filename <- "tmp.R"
   writeLines(str, filename)
@@ -71,4 +71,23 @@ test_that("current", {
   expect_that(source_files_current(attr(env2, "source_files")),
               is_true())
   expect_that(reload_source_files(env2), is_identical_to(env2))
+})
+
+test_that("current / reload_inplace", {
+  filename <- "tmp.R"
+  writeLines('f <- function(x) x', filename)
+  on.exit(file.remove(filename))
+  env <- load_source_files(filename, new.env())
+
+  expect_that(environment_current(env), is_true())
+  expect_that(env$f(1), equals(1))
+  expect_that(reload_source_files_inplace(env), is_null())
+  expect_that(env$f(1), equals(1))
+
+  writeLines('f <- function(x) 2 * x', filename)
+  expect_that(environment_current(env), is_false())
+  expect_that(reload_source_files_inplace(env), is_null())
+  expect_that(env$f(1), equals(2))
+  expect_that(reload_source_files_inplace(env), is_null())
+  expect_that(env$f(1), equals(2))
 })
