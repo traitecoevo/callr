@@ -56,7 +56,11 @@ load_source_files <- function(source_files, envir=.GlobalEnv,
 }
 
 source_files_current <- function(source_files) {
-  identical(tools::md5sum(source_files), source_files)
+  identical(tools::md5sum(names(source_files)), source_files)
+}
+
+environment_current <- function(envir) {
+  source_files_current(attr(envir, "source_files"))
 }
 
 ##' Test if environments are current and reload out-of-date

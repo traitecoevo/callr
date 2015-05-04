@@ -45,3 +45,30 @@ test_that("magrittr", {
     expect_that("magrittr" %in% .packages(), is_false())
   }
 })
+
+test_that("current", {
+  str <- 'f <- function(x) x'
+  filename <- "tmp.R"
+  writeLines(str, filename)
+  on.exit(file.remove(filename))
+  env <- load_source_files(filename, new.env())
+
+  expect_that(environment_current(env), is_true())
+  expect_that(source_files_current(attr(env, "source_files")),
+              is_true())
+  expect_that(reload_source_files(env), is_identical_to(env))
+
+  writeLines(c(str, ""), filename)
+
+  expect_that(environment_current(env), is_false())
+  expect_that(source_files_current(attr(env, "source_files")),
+              is_false())
+
+  env2 <- reload_source_files(env)
+  expect_that(reload_source_files(env), not(is_identical_to(env)))
+
+  expect_that(environment_current(env2), is_true())
+  expect_that(source_files_current(attr(env2, "source_files")),
+              is_true())
+  expect_that(reload_source_files(env2), is_identical_to(env2))
+})
