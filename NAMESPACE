@@ -3,5 +3,8 @@
 export(callr)
 export(install)
 export(install_packages)
+export(load_packages)
+export(load_source_files)
+export(reload_source_files)
 importFrom(docopt,docopt)
 importFrom(jsonlite,fromJSON)

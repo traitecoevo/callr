@@ -1,0 +1,47 @@
+context("Environment")
+
+test_that("load_packages", {
+  expect_that(load_packages(NULL), not(throws_error()))
+  expect_that(load_packages(character(0)), not(throws_error()))
+  expect_that(load_packages(c("testthat", "utils")), is_null())
+})
+
+test_that("load_source_files", {
+  expect_that(load_source_files(NULL), not(throws_error()))
+  expect_that(load_source_files(character(0)), not(throws_error()))
+  env <- new.env(parent=.GlobalEnv)
+  load_source_files("src_a.R", env)
+  expect_that(ls(env), equals(c("f", "g")))
+  expect_that(env$f(1), equals(1))
+  expect_that(attr(env, "source_files"), equals(hash_files("src_a.R")))
+
+  env <- new.env(parent=.GlobalEnv)
+  load_source_files(c("src_a.R", "src_b.R"), env)
+  expect_that(ls(env), equals(c("f", "g")))
+  expect_that(env$f(1), equals(2))
+  expect_that(attr(env, "source_files"),
+              equals(hash_files(c("src_a.R", "src_b.R"))))
+
+  env <- new.env(parent=.GlobalEnv)
+  load_source_files(c("src_b.R", "src_a.R"), env)
+  expect_that(ls(env), equals(c("f", "g")))
+  expect_that(env$f(1), equals(1))
+  expect_that(attr(env, "source_files"),
+              equals(hash_files(c("src_b.R", "src_a.R"))))
+})
+
+test_that("magrittr", {
+  skip_on_cran()
+  expect_that(load_source_files("src_magrittr.R"),
+              throws_error("%>%", fixed=TRUE))
+
+  if ("magrittr" %in% .packages(TRUE)) {
+    on.exit(unloadNamespace("magrittr"))
+    env <- new.env(parent=.GlobalEnv)
+    load_source_files("src_magrittr.R", env, packages="magrittr")
+    expect_that(ls(env), testthat::equals("s"))
+    expect_that("magrittr" %in% .packages(), is_true())
+    unloadNamespace("magrittr")
+    expect_that("magrittr" %in% .packages(), is_false())
+  }
+})
