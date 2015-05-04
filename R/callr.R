@@ -14,12 +14,7 @@ callr <- function(filename_in, filename_out=NULL,
     filename_out <- filename_in
   }
   dat <- read_callr_json(filename_in, strict)
-  for (p in dat$packages) {
-    library(p, character.only=TRUE)
-  }
-  for (s in dat$sources) {
-    source(s, chdir=TRUE)
-  }
+  load_source_files(dat$sources, .GlobalEnv, packages=dat$packages)
   call <- as.call(c(dat[["function"]], dat[["args"]]))
   value <- eval(call, .GlobalEnv)
   dat$dat$value <- value
