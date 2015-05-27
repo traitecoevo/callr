@@ -3,6 +3,8 @@ context("run_system")
 test_that("basic", {
   ## Just to pick something that will be installed for sure:
   R <- file.path(R.home("bin"), "R")
+  ## See: https://github.com/hadley/testthat/issues/144
+  Sys.setenv("R_TESTS" = "")
 
   dquote <- function(x) sprintf('"%s"', x)
   output <- run_system(R, c("-e", dquote("message('hello')")))
