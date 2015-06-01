@@ -3,11 +3,11 @@
 ##'
 ##' This function uses \code{system2} to call a system command fairly
 ##' portably.  What it adds is a particular way of dealing with
-##' errors.  \code{run_system} runs the command \code{command} with
+##' errors.  \code{call_system} runs the command \code{command} with
 ##' arguments \code{args} (and with optionally set environment
 ##' variables \code{env}) and hides \emph{all} produced output to
 ##' stdout and stderr.  If the command fails (currently any nonzero
-##' exit code is counted as a failure) then \code{run_system} will
+##' exit code is counted as a failure) then \code{call_system} will
 ##' throw an R error giving
 ##' \itemize{
 ##' \item{the full string of the command run}
@@ -22,7 +22,7 @@
 ##' prints all information to the screen (though this is delayed until
 ##' failure happens).
 ##'
-##' \code{run_system} also returns the contents of both stderr and
+##' \code{call_system} also returns the contents of both stderr and
 ##' stdout \emph{invisibly} so that it can be inspected if needed.
 ##' @title Run a system command, stopping on error
 ##' @param command The system command to be invoked, as a character
@@ -36,9 +36,12 @@
 ##' @param p Fraction of the error message to show from the tail of
 ##' the output if truncating on error (default is 20% lines are head,
 ##' 80% is tail).
+##'
+##' The function \code{run_system} does the same thing and will be
+##' removed as soon as code that depends on it is out of use.
 ##' @export
-run_system <- function(command, args, env=character(), max_lines=20,
-                       p=0.8) {
+call_system <- function(command, args, env=character(), max_lines=20,
+                        p=0.8) {
   res <- suppressWarnings(system2(command, args,
                                   env=env, stdout=TRUE, stderr=TRUE))
   ok <- attr(res, "status")
@@ -69,4 +72,12 @@ run_system <- function(command, args, env=character(), max_lines=20,
     stop(paste(msg, collapse="\n"))
   }
   invisible(res)
+}
+
+##' @export
+##' @rdname
+run_system <- function(command, args, env=character(), max_lines=20,
+                       p=0.8) {
+  .Deprecated("call_system")
+  call_system(command, args, env, max_lines, p)
 }

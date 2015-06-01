@@ -1,4 +1,4 @@
-context("run_system")
+context("call_system")
 
 test_that("basic", {
   ## Just to pick something that will be installed for sure:
@@ -7,11 +7,11 @@ test_that("basic", {
   Sys.setenv("R_TESTS" = "")
 
   dquote <- function(x) sprintf('"%s"', x)
-  output <- run_system(R, c("-e", dquote("message('hello')")))
+  output <- call_system(R, c("-e", dquote("message('hello')")))
   expect_that(any(grepl("hello", output)), is_true())
 
-  expect_that(run_system(R, c("-e", dquote("stop('myerror')"))),
+  expect_that(call_system(R, c("-e", dquote("stop('myerror')"))),
               throws_error("Error: myerror"))
-  expect_that(run_system(R, c("-e", dquote("stop('myerror')"))),
+  expect_that(call_system(R, c("-e", dquote("stop('myerror')"))),
               throws_error("had status"))
 })
