@@ -1,6 +1,6 @@
 Package: callr
 Title: Call R Functions from the Command Line
-Version: 0.1.0
+Version: 0.1.1
 Description: Organises calling R functions from the command line.
   Specify the dependent source files, package names, function name and
   arguments in 'JSON' and 'callr' will load the environment, call the

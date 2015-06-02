@@ -75,7 +75,7 @@ call_system <- function(command, args, env=character(), max_lines=20,
 }
 
 ##' @export
-##' @rdname
+##' @rdname call_system
 run_system <- function(command, args, env=character(), max_lines=20,
                        p=0.8) {
   .Deprecated("call_system")
