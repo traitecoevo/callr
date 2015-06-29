@@ -15,3 +15,14 @@ test_that("basic", {
   expect_that(call_system(R, c("-e", dquote("stop('myerror')"))),
               throws_error("had status"))
 })
+
+test_that("Sys_which", {
+  expect_that(Sys_which(NULL), throws_error("scalar"))
+  expect_that(Sys_which(character(0)), throws_error("scalar"))
+
+  if (Sys.which("R") != "") {
+    expect_that(Sys_which("R"), equals(Sys.which("R")))
+  }
+
+  expect_that(Sys_which("this-does-not-exist"), throws_error("not found"))
+})

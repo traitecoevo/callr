@@ -81,3 +81,21 @@ run_system <- function(command, args, env=character(), max_lines=20,
   .Deprecated("call_system")
   call_system(command, args, env, max_lines, p)
 }
+
+##' Like \code{Sys.which} but throws error of command not found.
+##' @title Find full path to executable
+##' @param name Name or path of possible exectutable to look for
+##' @export
+##' @examples
+##' try(Sys_which("R"))
+##' try(Sys_which("not_installed_program"))
+Sys_which <- function(name) {
+  if (length(name) != 1L) {
+    stop("'name' must be a scalar")
+  }
+  ret <- Sys.which(name)
+  if (ret == "") {
+    stop(sprintf("%s not found in $PATH", name))
+  }
+  ret
+}
