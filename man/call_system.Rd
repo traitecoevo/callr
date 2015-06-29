@@ -5,7 +5,8 @@
 \alias{run_system}
 \title{Run a system command, stopping on error}
 \usage{
-call_system(command, args, env = character(), max_lines = 20, p = 0.8)
+call_system(command, args, env = character(), max_lines = 20, p = 0.8,
+  stdout = TRUE, stderr = TRUE)
 
 run_system(command, args, env = character(), max_lines = 20, p = 0.8)
 }
@@ -23,11 +24,12 @@ print with the error message.  We may prune further to get the
 error message under \code{getOption("warn.length")}, however.}
 
 \item{p}{Fraction of the error message to show from the tail of
-the output if truncating on error (default is 20% lines are head,
-80% is tail).
+the output if truncating on error (default is 20\% lines are head,
+80\% is tail).}
 
-The function \code{run_system} does the same thing and will be
-removed as soon as code that depends on it is out of use.}
+\item{stdout,stderr}{Passed to \code{system2}.  Set one of these
+to \code{FALSE} to avoid capturing output from that stream.  Setting
+both to \code{FALSE} is not recommended.}
 }
 \description{
 The inverse of \code{\link{callr}}; this makes it easy to call a
@@ -43,11 +45,11 @@ stdout and stderr.  If the command fails (currently any nonzero
 exit code is counted as a failure) then \code{call_system} will
 throw an R error giving
 \itemize{
-\item{the full string of the command run}
-\item{the exit code of the command}
-\item{any \code{errmsg} attribute that might have been returned}
-\item{all output that the program produced to either stdout and
-stderr}
+\item the full string of the command run
+\item the exit code of the command
+\item any \code{errmsg} attribute that might have been returned
+\item all output that the program produced to either stdout and
+stderr
 }
 
 This means that a successful invocation of a program produces no
@@ -57,5 +59,8 @@ failure happens).
 
 \code{call_system} also returns the contents of both stderr and
 stdout \emph{invisibly} so that it can be inspected if needed.
+
+The function \code{run_system} does the same thing and will be
+removed as soon as code that depends on it is out of use.
 }
 
