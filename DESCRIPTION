@@ -1,14 +1,12 @@
 Package: callr
 Title: Call R Functions from the Command Line
-Version: 0.1.2
-Description: Organises calling R functions from the command line.
-  Specify the dependent source files, package names, function name and
-  arguments in 'JSON' and 'callr' will load the environment, call the
-  function and serialise the result back into the file as 'JSON'.
+Version: 0.1.4
+Description: Interfaces for calling R from other programs (via 'JSON'),
+  and for calling other programs from R (via wrappers around 'system2').
 Depends: R (>= 3.1.2)
 License: BSD_2_clause + file LICENSE
 LazyData: true
 Author: Rich FitzJohn
 Maintainer: Rich FitzJohn <rich.fitzjohn@gmail.com>
 Imports: jsonlite, docopt
-Suggests: testthat, devtools
+Suggests: testthat

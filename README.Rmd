@@ -1,78 +1,118 @@
 # callr
 
-## Calling R from the shell
-
-```{r, echo=FALSE, results=FALSE}
-suppressMessages(devtools::load_all())
-knitr::knit_hooks$set(output = function(x, options)
-  paste0("```json\n", x, "```\n"))
-```
-
 [![Build Status](https://travis-ci.org/traitecoevo/callr.png?branch=master)](https://travis-ci.org/traitecoevo/callr)
 
-Simple package for calling R from elsewhere via json
+The `callr` package has two main uses; calling R from other programs (including the shell) and for calling other programs from R.
 
-```{r, echo=FALSE, comment=NA}
-dat <- list("function"="myfunction",
-            args=list(list(name="foo", value="bar")))
-json <- jsonlite::prettify(jsonlite::toJSON(dat, auto_unbox=TRUE))
-writeLines(json, "myfile.json")
-json
-```
+## Calling R from the shell
 
-Then:
-
-```{r, echo=FALSE, results=FALSE}
-myfunction <- function(foo) {
-  rep(foo, 3)
+```{r, echo=FALSE, results="hide"}
+suppressMessages(devtools::load_all())
+file.copy(system.file(c("example.json", "example.R"), package="callr"), ".", overwrite=TRUE)
+lang_output <- function(x, lang) {
+  cat(c(sprintf("```%s", lang), x, "```"), sep="\n")
 }
-callr("myfile.json")
+json_output <- function(x) lang_output(x, "json")
+r_output <- function(x) lang_output(x, "r")
+plain_output <- function(x) lang_output(x, "plain")
 ```
 
-```
-callr myfile.json
+There are myriad interfaces for calling R from other languages (e.g., the python package `rpy2`) but debugging these interfaces when something goes wrong is challenging.  Similarly, ad-hoc decisions about serialisation must be made that can fail subtly.  We use the [`jsonlite`](https://github.com/jeroenooms/jsonlite) package to serialise calls to R from any language to give a simple and consistent interface.
+
+`callr` lets you specify, in a json file,
+
+* packages to load
+* R files to source
+* A function to call
+* Arguments to the function
+
+The result will then be added back into the original file.  For example, suppose you had some R function definitions (in a file `example.R`)
+
+```{r, echo=FALSE, results="asis"}
+r_output(readLines("example.R"))
 ```
 
-runs
+We might write a json file:
+
+```{r, echo=FALSE, results="asis"}
+json_output(readLines("example.json"))
+```
+
+This will be translated into a function:
+
+```{r, echo=FALSE, results="asis"}
+r_output(deparse(json_call(filename="example.json")))
+```
+
+Note that because json hashes do not guarantee order, the arguments are in an array (the `[` bits), and the argument name goes in the `name` field.  Names are optional.
+
+This can be run from within R like:
+```{r, echo=FALSE}
+callr("example.json")
+```
+
+Though it will certainly be easier to run from the a shell session with:
+
+```
+Rscript -e 'callr::callr("example.json")
+```
+
+or by installing the shell script helper:
 
 ```r
-myfunction(foo="bar")
+callr::install_callr("~/bin")
 ```
 
-and saves the result in the element `value` in the original json.
-
-```{r, echo=FALSE, comment=NA}
-writeLines(readLines("myfile.json"))
-```
-
-Further options:
-
-```{r, echo=FALSE, comment=NA}
-knitr::knit_hooks$set(output = function(x, options)
-  paste0("```\n", x, "```\n"))
-writeLines(system2("callr", "--help", stdout=TRUE))
-```
-
-## Script installation
-
-Using `callr` is easiest if you install the `callr` script:
-
-```r
-devtools::install_github("traitecoevo/callr")
-callr::install("~/bin")
-```
-The second line copies the `callr` script somewhere -- preferably in your `$PATH`.
-
-This allows using `callr` from the shell with:
+And running
 
 ```
-callr myfile.json
+callr example.json
 ```
 
-or from your favourite other scripting language through their system interface.
+Regardless of how `callr` is run, the file `example.json` now includes output:
+
+```{r, echo=FALSE, results="asis"}
+json_output(readLines("example.json"))
+```
+
+Further options to the script:
+
+```{r, echo=FALSE, results="asis"}
+plain_output(callr::call_system("callr", "--help"))
+```
+
+```{r, echo=FALSE, results="hide"}
+file.remove("example.R", "example.json")
+```
 
 ## Calling system programs from R
 
-Calling system commands from R error prone as error handling is inconsistent.  `callr` includes a function `call_system` to help here.  This is a very thin wrapper around `system2`, and hides output unless there is an error (exit code other than 0) when it throws an error and prints a (possibly truncated) error message.
+Calling system commands from R error prone as error handling is difficult and varies on things like whether standard output is to be collected.  `callr` includes a function `call_system` for the case where a system call is blocking (i.e., we want to wait until it completes).  It is a very thin wrapper around R's `system2` function and hides output unless there is an error, when it will print a (possibly truncated) error message.  This makes it useful for things like output of a LaTeX compilation where the amount of generated output is far too much to be useful but when an error occurs, some output is useful.
 
-All output (non-truncated) will be returned by a successful run of `call_system`.
+All output (non-truncated) will be returned, invisibly, by a successful run of `call_system`.
+
+As an example, due to the travis badge in this README, LaTeX cannot compile the LaTeX that pandoc generates:
+
+```{r}
+callr::call_system("pandoc", c("README.md", "-o", "README.tex", "--standalone"))
+callr::call_system("pdflatex",
+                   c("-interaction=nonstopmode", "-halt-on-error",
+                     "README.tex"))
+```
+
+only the last bit of output is included in the error, with many lines of output dropped.
+
+```{r, results="hide", echo=FALSE}
+file.remove("README.aux", "README.log", "README.out", "README.tex")
+```
+
+## Installation
+
+Install from github with
+
+```
+devtools::install_github("traitecoevo/callr")
+callr::install_callr("~/bin")
+```
+
+replacing the path in the second line with something in your `$PATH`.

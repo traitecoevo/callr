@@ -31,24 +31,33 @@
 ##'
 ##' @title Run a system command, stopping on error
 ##' @param command The system command to be invoked, as a character
-##' string.  \code{\link{Sys.which}} is useful here.
+##'   string.  \code{\link{Sys.which}} is useful here.
 ##' @param args A character vector of arguments to \code{command}
 ##' @param env A character vector of name=value pairs to be set as
-##' environment variables (see \code{\link{system2}}).
+##'   environment variables (see \code{\link{system2}}).
 ##' @param max_lines Maximum number of lines of program output to
-##' print with the error message.  We may prune further to get the
-##' error message under \code{getOption("warn.length")}, however.
+##'   print with the error message.  We may prune further to get the
+##'   error message under \code{getOption("warn.length")}, however.
 ##' @param p Fraction of the error message to show from the tail of
-##' the output if truncating on error (default is 20\% lines are head,
-##' 80\% is tail).
+##'   the output if truncating on error (default is 20\% lines are
+##'   head, 80\% is tail).
 ##' @param stdout,stderr Passed to \code{system2}.  Set one of these
-##' to \code{FALSE} to avoid capturing output from that stream.  Setting
-##' both to \code{FALSE} is not recommended.
+##'   to \code{FALSE} to avoid capturing output from that stream.
+##'   Setting both to \code{FALSE} is not recommended.
+##' @param locate_command The \code{command} will be passed through
+##'   \code{\link{Sys_which}} to find the full path, and will report a
+##'   sensible error if the command can't be found.
 ##' @export
+##'
 call_system <- function(command, args, env=character(), max_lines=20,
-                        p=0.8, stdout=TRUE, stderr=TRUE) {
+                        p=0.8, stdout=TRUE, stderr=TRUE, locate_command=TRUE) {
+  if (locate_command) {
+    command <- Sys_which(command)
+  }
   res <- suppressWarnings(system2(command, args,
-                                  env=env, stdout=stdout, stderr=stderr))
+                                  env=env, stdin="",
+                                  stdout=stdout, stderr=stderr))
+  ## TODO: need to better allow stdout/stderr to *not* be captured.
   ok <- attr(res, "status")
   if (!is.null(ok) && ok != 0) {
     max_nc <- getOption("warning.length")
@@ -77,14 +86,6 @@ call_system <- function(command, args, env=character(), max_lines=20,
     stop(paste(msg, collapse="\n"))
   }
   invisible(res)
-}
-
-##' @export
-##' @rdname call_system
-run_system <- function(command, args, env=character(), max_lines=20,
-                       p=0.8) {
-  .Deprecated("call_system")
-  call_system(command, args, env, max_lines, p)
 }
 
 ##' Like \code{Sys.which} but throws error of command not found.

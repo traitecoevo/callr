@@ -2,13 +2,10 @@
 % Please edit documentation in R/system.R
 \name{call_system}
 \alias{call_system}
-\alias{run_system}
 \title{Run a system command, stopping on error}
 \usage{
 call_system(command, args, env = character(), max_lines = 20, p = 0.8,
-  stdout = TRUE, stderr = TRUE)
-
-run_system(command, args, env = character(), max_lines = 20, p = 0.8)
+  stdout = TRUE, stderr = TRUE, locate_command = TRUE)
 }
 \arguments{
 \item{command}{The system command to be invoked, as a character
@@ -24,12 +21,16 @@ print with the error message.  We may prune further to get the
 error message under \code{getOption("warn.length")}, however.}
 
 \item{p}{Fraction of the error message to show from the tail of
-the output if truncating on error (default is 20\% lines are head,
-80\% is tail).}
+the output if truncating on error (default is 20\% lines are
+head, 80\% is tail).}
 
 \item{stdout,stderr}{Passed to \code{system2}.  Set one of these
-to \code{FALSE} to avoid capturing output from that stream.  Setting
-both to \code{FALSE} is not recommended.}
+to \code{FALSE} to avoid capturing output from that stream.
+Setting both to \code{FALSE} is not recommended.}
+
+\item{locate_command}{The \code{command} will be passed through
+\code{\link{Sys_which}} to find the full path, and will report a
+sensible error if the command can't be found.}
 }
 \description{
 The inverse of \code{\link{callr}}; this makes it easy to call a

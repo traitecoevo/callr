@@ -1,3 +1,6 @@
 ^\.travis\.yml$
 ^Makefile$
 ^README\.Rmd$
+^example\.(json|R)$
+^TODO.md$
+^callr_.*\.tar\.gz$

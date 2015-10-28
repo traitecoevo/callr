@@ -1,0 +1,14 @@
+{
+    "packages": "mvtnorm",
+    "sources": "example.R",
+    "function": "random_mvnorm",
+    "args": [
+        {
+            "value": 10
+        },
+        {
+            "name": "dim",
+            "value": 3
+        }
+    ]
+}

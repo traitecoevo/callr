@@ -15,7 +15,7 @@ callr <- function(filename_in, filename_out=NULL,
   }
   dat <- read_callr_json(filename_in, strict)
   load_source_files(dat$sources, .GlobalEnv, packages=dat$packages)
-  call <- as.call(c(dat[["function"]], dat[["args"]]))
+  call <- json_call(dat)
   value <- eval(call, .GlobalEnv)
   dat$dat$value <- value
   json <- jsonlite::toJSON(dat$dat, auto_unbox=auto_unbox)
@@ -33,7 +33,7 @@ callr <- function(filename_in, filename_out=NULL,
 ##' @title Install callr script
 ##' @param path Directory to install the script
 ##' @export
-install <- function(path) {
+install_callr <- function(path) {
   code <- c("#!/usr/bin/env Rscript", "library(methods)", "callr:::main()")
   dest <- file.path(path, "callr")
   writeLines(code, dest)
@@ -114,13 +114,13 @@ read_callr_args <- function(args) {
   if (!is.null(args)) {
     name <- lapply(args, "[[", "name")
     msg <- vapply(name, is.null, logical(1))
-    name[msg] <- ""
-    ok <- vapply(name, function(x) length(x) == 1, logical(1))
-    if (!all(ok)) {
-      stop("'name' must be present for all arguments")
+    if (all(msg)) {
+      name <- NULL
+    } else {
+      name[msg] <- ""
+      name <- as.character(name)
     }
-    args <- lapply(args, "[[", "value")
-    names(args) <- as.character(name)
+    args <- setNames(lapply(args, "[[", "value"), name)
   }
   args
 }
@@ -148,7 +148,6 @@ read_callr_sources <- function(sources) {
   sources
 }
 
-## From experimentr:
 backup <- function(filename, verbose=FALSE, move=FALSE) {
   if (file.exists(filename)) {
     pat <- sprintf("%s\\.([0-9]+)", basename(filename))
@@ -169,4 +168,29 @@ backup <- function(filename, verbose=FALSE, move=FALSE) {
       file.copy(filename, dest)
     }
   }
+}
+
+json_call <- function(dat=read_callr_json(filename, FALSE), filename=NULL) {
+  as.call(c(dat[["function"]], dat[["args"]]))
+}
+
+## Minimal version of this thing, until I can factor out the
+## 'environment' code properly, probably into installr.
+load_source_files <- function(source_files, envir=.GlobalEnv,
+                              packages=character(0), ...) {
+  do_source <- function(file, envir, ...) {
+    catch_source <- function(e) {
+      stop(sprintf("while sourcing %s:\n%s", file, e$message),
+           call.=FALSE)
+    }
+    tryCatch(sys.source(file, envir, ...),
+             error=catch_source)
+  }
+  for (p in packages) {
+    suppressMessages(library(p, character.only=TRUE, quietly=TRUE))
+  }
+  for (file in source_files) {
+    do_source(file, envir, ...)
+  }
+  invisible(envir)
 }
